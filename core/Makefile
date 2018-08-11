@@ -2903,8 +2903,31 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) \
 	   $(if $(OEM_OTA_CONFIG), -o $(OEM_OTA_CONFIG)) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
 
-.PHONY: otapackage
+VANILLA_TARGET_PACKAGE :=$(PRODUCT_OUT_/$(TARGET_DEVICE)-$(VANILLA_NAME)-$(VANILLA_VERSION)
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
+
+.PHONY: otapackage vanilla
+otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
+vanilla: otapackage bacon
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(VANILLA_TARGET_PACKAGE)
+	$(hide) $(MD5SUM) $(VANILLA_TARGET_PACKAGE) > $(VANILLA_TARGET_PACKAGE).md5sum
+	@echo -e ${CL_YLW}	
+	@echo -e "========================================================"
+	@echo -e " __  __                        ___    ___               "
+	@echo -e "/\ \/\ \                   __ /\_ \  /\_ \              "
+	@echo -e "\ \ \ \ \     __      ___ /\_\/\ \\ \  \ \ \      __     "
+	@echo -e " \ \ \ \ \  / __ \  /  _  \/\ \ \ \ \  \ \ \   / __ \   "
+	@echo -e "  \ \ \_/ \/\ \L\.\_/\ \/\ \ \ \ \_\ \_ \_\ \_/\ \L\.\_ "
+	@echo -e "   \  \___/\ \__/.\_\ \_\ \_\ \_\/\____\/\____\ \__/.\_\ "
+	@echo -e "     \/__/  \/__/\/_/\/_/\/_/\/_/\/____/\/____/\/__/\/_/ "
+	@echo -e "========================================================"
+	@echo -e ""
+	@echo -e "ZIP: $(VANILLA_TARGET_PACKAGE)"
+	@echo -e "SIZE: "`ls -hal $(VANILLA_TARGET_PACKAGE) | cut -d ' ' -f 5`
+	@echo -e "MD5: "`cat $(VANILLA_TARGET_PACKAGE).md5sum | cut -d ' ' -f 1`
+    @echo -e ${CL_RST}
+
+vanilla: bacon
 
 endif    # build_ota_package
 
